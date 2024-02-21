@@ -1,0 +1,52 @@
+class SlidingPuzzle:
+    def __init__(self, initial_state):
+        self.state = initial_state
+
+    def __str__(self):
+        rows = [f"{row}\n" for row in self.state]
+        return ''.join(rows)
+
+    def find_empty_space(self):
+        for i in range(3):
+            for j in range(3):
+                if self.state[i][j] == 0:
+                    return i, j
+
+    def is_valid_move(self, row, col):
+        return 0 <= row < 3 and 0 <= col < 3
+
+    def move_tile(self, row, col):
+        empty_row, empty_col = self.find_empty_space()
+
+        if self.is_valid_move(row, col) and (
+                (abs(empty_row - row) == 1 and empty_col == col) or
+                (abs(empty_col - col) == 1 and empty_row == row)
+        ):
+            # Swap the empty space with the selected tile
+            self.state[empty_row][empty_col], self.state[row][col] = self.state[row][col], self.state[empty_row][empty_col]
+            return True
+        else:
+            return False
+
+    def is_solved(self):
+        flattened_state = [tile for row in self.state for tile in row]
+        return flattened_state == list(range(1, 9)) + [0]
+
+# Example usage:
+initial_state = [[1, 2, 3],
+                 [4, 5, 6],
+                 [7, 8, 0]]
+
+puzzle = SlidingPuzzle(initial_state)
+
+print("Initial State:")
+print(puzzle)
+
+# Move example
+puzzle.move_tile(2, 2)
+
+print("\nState after one move:")
+print(puzzle)
+
+# Check if the puzzle is solved
+print("\nIs the puzzle solved?", puzzle.is_solved())
