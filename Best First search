@@ -1,0 +1,56 @@
+import heapq
+
+class Node:
+    def _init_(self, state, heuristic):
+        self.state = state
+        self.heuristic = heuristic
+
+    def _lt_(self, other):
+        return self.heuristic < other.heuristic
+
+def best_first_search(graph, start, goal, heuristic_func):
+    visited = set()
+    priority_queue = [Node(start, heuristic_func(start))]
+    
+    while priority_queue:
+        current_node = heapq.heappop(priority_queue)
+        current_state = current_node.state
+
+        if current_state == goal:
+            return current_state  # Goal reached
+
+        if current_state not in visited:
+            visited.add(current_state)
+            print(f"Visiting {current_state}")
+
+            for neighbor in graph[current_state]:
+                if neighbor not in visited:
+                    heapq.heappush(priority_queue, Node(neighbor, heuristic_func(neighbor)))
+
+    return None  # Goal not reachable
+
+# Example usage:
+graph = {
+    'A': ['B', 'C'],
+    'B': ['A', 'D', 'E'],
+    'C': ['A', 'F', 'G'],
+    'D': ['B'],
+    'E': ['B', 'H'],
+    'F': ['C'],
+    'G': ['C'],
+    'H': ['E']
+}
+
+def heuristic_func(node):
+    # Replace this with your heuristic function
+    return len(graph[node])
+
+start_node = 'A'
+goal_node = 'G'
+
+result = best_first_search(graph, start_node, goal_node, heuristic_func)
+
+if result:
+    print(f"\nGoal '{goal_node}' reached.")
+else:
+    print(f"\nGoal '{goal_node}' not reachable.")
