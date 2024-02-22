@@ -1,0 +1,64 @@
+import heapq
+
+class Node:
+    def __init__(self, state, parent=None, g=0, h=0):
+        self.state = state
+        self.parent = parent
+        self.g = g
+        self.h = h
+
+    def __lt__(self, other):
+        return (self.g + self.h) < (other.g + other.h)
+
+def astar(start_state, goal_state, heuristic, neighbors_func):
+    start_node = Node(state=start_state, g=0, h=heuristic(start_state))
+    frontier = [start_node]
+    explored = set()
+
+    while frontier:
+        current_node = heapq.heappop(frontier)
+
+        if current_node.state == goal_state:
+            path = []
+            while current_node:
+                path.append(current_node.state)
+                current_node = current_node.parent
+            return path[::-1]
+
+        explored.add(current_node.state)
+
+        for neighbor_state in neighbors_func(current_node.state):
+            if neighbor_state in explored:
+                continue
+
+            neighbor_node = Node(state=neighbor_state,
+                                 parent=current_node,
+                                 g=current_node.g + 1,
+                                 h=heuristic(neighbor_state))
+
+            if neighbor_node not in frontier:
+                heapq.heappush(frontier, neighbor_node)
+
+    return None  # No path found
+
+# Example usage:
+def heuristic(state):
+    # Example heuristic function (Manhattan distance)
+    goal_state = (2, 2)
+    return abs(state[0] - goal_state[0]) + abs(state[1] - goal_state[1])
+
+def neighbors_func(state):
+    x, y = state
+    neighbors = [(x+1, y), (x-1, y), (x, y+1), (x, y-1)]
+    # Consider any additional constraints on valid neighbors
+    return [(nx, ny) for nx, ny in neighbors if 0 <= nx <= 3 and 0 <= ny <= 3]
+
+start_state = (0, 0)
+goal_state = (2, 2)
+
+path = astar(start_state, goal_state, heuristic, neighbors_func)
+
+if path:
+    print("A* Path:", path)
+else:
+    print("No path found.")
