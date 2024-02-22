@@ -1,0 +1,39 @@
+import random
+
+def hill_climbing(initial_state, max_iterations=1000):
+    current_state = initial_state
+
+    for _ in range(max_iterations):
+        neighbors = get_neighbors(current_state)
+        if not neighbors:
+            break  # No more moves possible
+
+        best_neighbor = max(neighbors, key=evaluate)
+        
+        if evaluate(best_neighbor) <= evaluate(current_state):
+            break  # Local optimum reached
+        
+        current_state = best_neighbor
+
+    return current_state
+
+def get_neighbors(state):
+    # Generate neighboring states by changing one element
+    neighbors = []
+    for i in range(len(state)):
+        neighbor = list(state)
+        neighbor[i] += random.choice([-1, 1])
+        neighbors.append(tuple(neighbor))
+    return neighbors
+
+def evaluate(state):
+    # Example evaluation function (minimize this value)
+    return sum(state)
+
+# Example usage:
+initial_state = (1, 1, 1)
+final_state = hill_climbing(initial_state)
+
+print("Initial state:", initial_state)
+print("Final state:", final_state)
+print("Optimal value:", evaluate(final_state))
