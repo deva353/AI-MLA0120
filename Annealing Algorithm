@@ -1,0 +1,44 @@
+import math
+import random
+
+def objective_function(x):
+    # Replace this with your own objective function
+    return x**2 + 3*x + 5
+
+def simulated_annealing(initial_solution, temperature, cooling_rate, iterations):
+    current_solution = initial_solution
+    current_energy = objective_function(current_solution)
+
+    for iteration in range(iterations):
+        # Generate a random neighbor
+        neighbor = current_solution + random.uniform(-1, 1)
+
+        # Evaluate the neighbor's energy
+        neighbor_energy = objective_function(neighbor)
+
+        # Calculate the energy difference
+        delta_energy = neighbor_energy - current_energy
+
+        # Accept the neighbor if it has lower energy or with a certain probability
+        if delta_energy < 0 or random.uniform(0, 1) < math.exp(-delta_energy / temperature):
+            current_solution = neighbor
+            current_energy = neighbor_energy
+
+        # Cool down the temperature
+        temperature *= cooling_rate
+
+    return current_solution, current_energy
+
+if __name__ == "__main__":
+    # Set the initial parameters
+    initial_solution = random.uniform(-10, 10)
+    initial_temperature = 100.0
+    cooling_rate = 0.95
+    iterations = 1000
+
+    # Run simulated annealing
+    final_solution, final_energy = simulated_annealing(initial_solution, initial_temperature, cooling_rate, iterations)
+
+    # Print the result
+    print("Final Solution:", final_solution)
+    print("Final Energy:", final_energy)
